@@ -1,0 +1,168 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "windows"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         String   @default("employee") // admin, hr, employee
+  status       String   @default("active") // active, inactive
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  employee     Employee?
+  auditLogs    AuditLog[]
+  reviewsGiven PerformanceReview[] @relation("Reviewer")
+
+  @@index([email])
+  @@index([role])
+}
+
+model Permission {
+  id          Int      @id @default(autoincrement())
+  key         String   @unique
+  description String
+  createdAt   DateTime @default(now())
+
+  rolePermissions RolePermission[]
+}
+
+model RolePermission {
+  id            Int      @id @default(autoincrement())
+  role          String
+  permissionKey String
+  createdAt     DateTime @default(now())
+
+  permission Permission @relation(fields: [permissionKey], references: [key], onDelete: Cascade)
+
+  @@unique([role, permissionKey])
+  @@index([role])
+}
+
+model Department {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  employees Employee[]
+  positions Position[]
+}
+
+model Position {
+  id           Int      @id @default(autoincrement())
+  title        String
+  level        String
+  departmentId Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  department Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  employees  Employee[]
+
+  @@index([departmentId])
+}
+
+model Employee {
+  id           Int      @id @default(autoincrement())
+  userId       Int      @unique
+  employeeCode String   @unique
+  departmentId Int
+  positionId   Int
+  hireDate     DateTime
+  salaryBase   Float
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  department Department @relation(fields: [departmentId], references: [id])
+  position   Position   @relation(fields: [positionId], references: [id])
+
+  attendances Attendance[]
+  payrolls    Payroll[]
+  reviews     PerformanceReview[] @relation("Employee")
+
+  @@index([userId])
+  @@index([departmentId])
+  @@index([positionId])
+  @@index([employeeCode])
+}
+
+model Attendance {
+  id         Int       @id @default(autoincrement())
+  employeeId Int
+  checkInAt  DateTime
+  checkOutAt DateTime?
+  status     String    @default("present") // present, absent, late, halfday
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId])
+  @@index([checkInAt])
+}
+
+model Payroll {
+  id          Int      @id @default(autoincrement())
+  employeeId  Int
+  periodStart DateTime
+  periodEnd   DateTime
+  gross       Float
+  deductions  Float
+  net         Float
+  status      String   @default("draft") // draft, approved, paid
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId])
+  @@index([periodStart])
+  @@index([status])
+}
+
+model PerformanceReview {
+  id         Int      @id @default(autoincrement())
+  employeeId Int
+  reviewerId Int
+  period     String
+  score      Float
+  notes      String?  @db.Text
+  status     String   @default("draft") // draft, submitted, approved
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  employee Employee @relation("Employee", fields: [employeeId], references: [id], onDelete: Cascade)
+  reviewer User     @relation("Reviewer", fields: [reviewerId], references: [id])
+
+  @@index([employeeId])
+  @@index([reviewerId])
+}
+
+model AuditLog {
+  id          Int      @id @default(autoincrement())
+  actorUserId Int
+  action      String
+  entity      String
+  entityId    Int?
+  meta        String?  @db.Text
+  createdAt   DateTime @default(now())
+
+  actor User @relation(fields: [actorUserId], references: [id])
+
+  @@index([actorUserId])
+  @@index([entity])
+  @@index([createdAt])
+}

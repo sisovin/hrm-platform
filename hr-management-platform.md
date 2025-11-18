@@ -11,7 +11,7 @@ Build a comprehensive, modern HR Management System using Next.js with multi-pane
 - **UI:** shadcn/ui with Tailwind CSS and PostCSS
 - **Auth:** NextAuth.js (Credentials + OAuth-ready), JWT sessions
 - **RBAC:** Server-side role/permission checks + middleware guards
-- **ORM:** Supabase with PostgreSQL (or MySQL/SQLite for local)
+- **ORM:** Supabase with PostgreSQL for local
 - **Scheduling:** Cron job via Vercel Cron or hosted scheduler for payroll
 - **Forms & Validation:** React Hook Form + Zod
 - **State/Server:** Server Actions, route handlers, ISR/SSG as needed
