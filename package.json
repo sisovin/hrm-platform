@@ -10,7 +10,9 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev --name init_hrms",
     "db:seed": "ts-node prisma/seed.ts",
-    "supabase:start": "supabase start"
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:deploy": "bash ./supabase/deploy.sh"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
