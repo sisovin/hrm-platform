@@ -218,6 +218,45 @@ Before you begin, ensure you have the following installed:
 
    > ⚠️ **Note:** If you encounter network issues with Prisma engines, the build will still succeed with fallback handlers. See [Troubleshooting](#-troubleshooting) section.
 
+5a. **(Optional) Start Supabase locally**
+
+If you'd like to use Supabase (local or remote) as your Postgres provider and dashboard, follow these steps:
+
+```bash
+# Install Supabase CLI (if needed)
+npm install -g supabase
+
+# Login (one-time)
+supabase login
+
+# Start Supabase locally (runs Docker services)
+supabase start
+
+# Stop Supabase
+supabase stop
+```
+
+When Supabase is running locally, update the `DATABASE_URL` in `.env` to point to the local Supabase DB (example):
+
+```env
+DATABASE_URL="postgresql://postgres:postgres@127.0.0.1:54321/postgres"
+```
+
+5b. **Deploying schema to Supabase (local vs remote)**
+
+If using the Supabase CLI to apply schema directly to the Supabase Postgres database, you can use:
+
+```bash
+# Use Prisma migrations to create the schema locally
+npm run db:generate
+npm run db:migrate
+
+# OR with Supabase (to apply SQL to Supabase):
+supabase db reset --project-ref <project-ref> # ⚠️ resets DB
+```
+
+Remember that when using Supabase hosting (remote), you should set your `DATABASE_URL` to the remote Postgres connection string and optionally use Supabase's `supabase db push` or a migration strategy via Prisma.
+
 5. **Set up the database**
 
    ```bash
