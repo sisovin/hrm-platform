@@ -23,7 +23,7 @@ export async function middleware(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
   // If no token or role not allowed, redirect to login
-  if (!token || !panelRole[match].includes((token as any).role)) {
+  if (!token || !panelRole[match].includes((token as { role?: string }).role || '')) {
     return NextResponse.redirect(new URL("/login", url.origin));
   }
 

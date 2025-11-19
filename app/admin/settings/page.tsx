@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
 
 export default function SettingsPage() {
   return (
@@ -172,25 +173,25 @@ export default function SettingsPage() {
           <CardContent>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">Email Notifications</p>
+                <div className="flex-1">
+                  <Label htmlFor="email-notifications" className="font-medium">Email Notifications</Label>
                   <p className="text-sm text-muted-foreground">Receive email updates for important events</p>
                 </div>
-                <input type="checkbox" defaultChecked className="w-4 h-4" />
+                <Switch id="email-notifications" defaultChecked />
               </div>
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">Leave Request Alerts</p>
+                <div className="flex-1">
+                  <Label htmlFor="leave-request-alerts" className="font-medium">Leave Request Alerts</Label>
                   <p className="text-sm text-muted-foreground">Get notified when employees request leave</p>
                 </div>
-                <input type="checkbox" defaultChecked className="w-4 h-4" />
+                <Switch id="leave-request-alerts" defaultChecked />
               </div>
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">Attendance Alerts</p>
+                <div className="flex-1">
+                  <Label htmlFor="attendance-alerts" className="font-medium">Attendance Alerts</Label>
                   <p className="text-sm text-muted-foreground">Receive alerts for late arrivals and absences</p>
                 </div>
-                <input type="checkbox" defaultChecked className="w-4 h-4" />
+                <Switch id="attendance-alerts" defaultChecked />
               </div>
               <Button className="w-fit">Save Changes</Button>
             </div>

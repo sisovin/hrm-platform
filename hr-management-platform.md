@@ -41,7 +41,7 @@ Build a comprehensive, modern HR Management System using Next.js with multi-pane
 
 ## Database setup
 
-- **Supabase init:** `npx Supabase init`
+- **Supabase init:** `Supabase start`
 - **Environment:** Set `DATABASE_URL` in `.env`
 - **Schema models (core):**
   - **User:** id, email, passwordHash, name, role (admin|hr|employee), status
@@ -54,7 +54,7 @@ Build a comprehensive, modern HR Management System using Next.js with multi-pane
   - **Payroll:** id, employeeId, periodStart, periodEnd, gross, deductions, net, status
   - **PerformanceReview:** id, employeeId, reviewerId, period, score, notes
   - **AuditLog:** id, actorUserId, action, entity, entityId, meta, createdAt
-- **Migrate:** `npx Supabase migrate dev --name init_hrms`
+- **Migrate:** `Supabase deploy dev --name init_hrms`
 
 ---
 

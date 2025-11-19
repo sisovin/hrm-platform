@@ -14,7 +14,8 @@ if (-not $env:SUPABASE_DB_URL) {
 # Ensure CLI login
 try {
   supabase status | Out-Null
-} catch {
+}
+catch {
   Write-Host "Supabase CLI not logged in. Running 'supabase login' interactively..."
   supabase login
 }

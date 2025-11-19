@@ -1,16 +1,17 @@
 import { auth } from "./auth";
+import type { Session } from 'next-auth';
 import { prisma } from "./prisma";
 
 export type Role = "admin" | "hr" | "employee";
 
 export async function assertRole(allowedRoles: Role[]) {
-  const session = await auth();
+  const session = await auth() as Session | null;
 
   if (!session?.user) {
     throw new Error("Unauthorized: No active session");
   }
 
-  const userRole = (session.user as any).role as Role;
+  const userRole = (session.user as { role?: string }).role as Role;
 
   if (!allowedRoles.includes(userRole)) {
     throw new Error(`Forbidden: Role ${userRole} not allowed`);
@@ -37,13 +38,13 @@ export async function hasPermission(userId: number, permissionKey: string): Prom
 }
 
 export async function getCurrentUser() {
-  const session = await auth();
+  const session = await auth() as Session | null;
 
   if (!session?.user) {
     return null;
   }
 
-  const userId = parseInt((session.user as any).id);
+  const userId = parseInt(String((session.user as { id?: string | number }).id || '0'));
 
   const user = await prisma.user.findUnique({
     where: { id: userId },

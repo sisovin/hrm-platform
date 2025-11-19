@@ -257,6 +257,70 @@ supabase db reset --project-ref <project-ref> # ⚠️ resets DB
 
 Remember that when using Supabase hosting (remote), you should set your `DATABASE_URL` to the remote Postgres connection string and optionally use Supabase's `supabase db push` or a migration strategy via Prisma.
 
+### Supabase CLI - Start / Stop / Deploy
+
+If you'd like to use the Supabase CLI for local development and remote deployments, here are the recommended commands and scripts included in this project:
+
+Install Supabase CLI:
+
+```bash
+npm install -g supabase
+# or: npx supabase --help
+```
+
+Start local Supabase stack (Postgres, Realtime, Auth, Storage):
+
+```bash
+npm run supabase:start
+# or:
+supabase start
+```
+
+Stop local Supabase stack:
+
+```bash
+npm run supabase:stop
+# or:
+supabase stop
+```
+
+Link your local project to a Supabase remote project and deploy resources + run migrations using the script:
+
+```bash
+# Set remote project ref and DB URL as env vars
+export SUPABASE_PROJECT_REF=your_project_ref
+export SUPABASE_DB_URL="postgresql://postgres:password@db.supabase.co:5432/postgres"
+
+# Deploy (Bash)
+npm run supabase:deploy
+
+# Or with PowerShell
+./supabase/deploy.ps1
+```
+
+Notes:
+
+- `SUPABASE_PROJECT_REF` can be obtained from your Supabase dashboard
+- `SUPABASE_DB_URL` should be the connection string for the remote Postgres instance returned by Supabase
+- The deploy script will link the project, run supabase deploy (functions & static if present), and run Prisma migrations using the provided `SUPABASE_DB_URL`; it will also run the fallback `prisma/seed.cjs` to seed the DB.
+
+### Apply SQL migrations or Prisma migrations & seed
+
+You can apply schema and seed using either raw SQL or Prisma migrations:
+
+```bash
+# Raw SQL (psql): remove any query string params like ?schema=public
+psql "postgresql://postgres:password@127.0.0.1:5432/hrms_db" -f ./supabase/migrations/0001_init.sql
+
+# Prisma (recommended):
+npm run db:generate      # generate Prisma client
+npm run db:migrate       # create & apply migrations
+npm run db:seed          # seed DB (TS seed)
+
+# If ts-node or ts seed has issues, run the compiled JS seed script:
+node prisma/seed.cjs
+```
+
 5. **Set up the database**
 
    ```bash

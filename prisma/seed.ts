@@ -30,9 +30,9 @@ async function main() {
 
   for (const rp of adminPerms) {
     await prisma.rolePermission.upsert({
-      where: { role_permissionKey: [rp.role, rp.permissionKey] } as any,
+      where: { role_permissionKey: { role: rp.role, permissionKey: rp.permissionKey } },
       update: {},
-      create: rp as any,
+      create: rp,
     });
   }
 
@@ -43,18 +43,21 @@ async function main() {
     create: { name: 'Engineering' },
   });
 
-  const position = await prisma.position.upsert({
-    where: { title: 'Software Engineer' },
-    update: {},
-    create: {
-      title: 'Software Engineer',
-      level: 'L1',
-      departmentId: engineering.id,
-    },
+  let position = await prisma.position.findFirst({
+    where: { title: 'Software Engineer', departmentId: engineering.id },
   });
+  if (!position) {
+    position = await prisma.position.create({
+      data: {
+        title: 'Software Engineer',
+        level: 'L1',
+        departmentId: engineering.id,
+      },
+    });
+  }
 
   // Admin user
-  const adminPassword = await hash('admin1234', 10);
+  const adminPassword = await hash('password123', 10);
   const adminUser = await prisma.user.upsert({
     where: { email: 'admin@hrm.local' },
     update: {},
@@ -67,7 +70,7 @@ async function main() {
   });
 
   // Employee user
-  const employeePassword = await hash('employee123', 10);
+  const employeePassword = await hash('password123', 10);
   const user = await prisma.user.upsert({
     where: { email: 'jane.doe@hrm.local' },
     update: {},

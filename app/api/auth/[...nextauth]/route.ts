@@ -1,7 +1,6 @@
-import { handlers } from "@/lib/auth";
+import NextAuth from 'next-auth';
+import authConfig from '@/lib/auth';
 
-// Provide fallback handlers if NextAuth fails to initialize
-const GET = handlers?.GET || (async () => new Response("Auth not configured", { status: 503 }));
-const POST = handlers?.POST || (async () => new Response("Auth not configured", { status: 503 }));
+const handler = NextAuth(authConfig);
 
-export { GET, POST };
+export { handler as GET, handler as POST };

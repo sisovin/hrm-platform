@@ -21,9 +21,10 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  employee     Employee?
-  auditLogs    AuditLog[]
-  reviewsGiven PerformanceReview[] @relation("Reviewer")
+  employee       Employee?
+  auditLogs      AuditLog[]
+  reviewsGiven   PerformanceReview[] @relation("Reviewer")
+  leaveApprovals LeaveRequest[]      @relation("LeaveApprover")
 
   @@index([email])
   @@index([role])
@@ -71,6 +72,7 @@ model Position {
   department Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
   employees  Employee[]
 
+  @@unique([title, level, departmentId])
   @@index([departmentId])
 }
 
@@ -89,9 +91,10 @@ model Employee {
   department Department @relation(fields: [departmentId], references: [id])
   position   Position   @relation(fields: [positionId], references: [id])
 
-  attendances Attendance[]
-  payrolls    Payroll[]
-  reviews     PerformanceReview[] @relation("Employee")
+  attendances   Attendance[]
+  payrolls      Payroll[]
+  reviews       PerformanceReview[] @relation("Employee")
+  leaveRequests LeaveRequest[]
 
   @@index([userId])
   @@index([departmentId])
@@ -149,6 +152,27 @@ model PerformanceReview {
 
   @@index([employeeId])
   @@index([reviewerId])
+}
+
+model LeaveRequest {
+  id         Int       @id @default(autoincrement())
+  employeeId Int
+  leaveType  String // vacation, sick, personal, etc.
+  startDate  DateTime
+  endDate    DateTime
+  reason     String?   @db.Text
+  status     String    @default("pending") // pending, approved, rejected
+  approvedBy Int?
+  approvedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  approver User?    @relation("LeaveApprover", fields: [approvedBy], references: [id])
+
+  @@index([employeeId])
+  @@index([approvedBy])
+  @@index([status])
 }
 
 model AuditLog {
